@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fondos para graduación</title>
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/dczh5rxbe/image/upload/v1760455011/VERSION_CORTA_PNG_-_YOREL_CANDO_Mesa_de_trabajo_1_kqjgtw.png">
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* Contenedor principal responsive */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    
+    /* Grid responsive */
+    .grid {
+      display: grid;
+      gap: 24px;
+    }
+    
+    .grid-1 { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .container { padding: 0 12px; }
+    }
+    
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    /* Botones universales */
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      outline: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    
+    .btn:hover, .btn:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* Inputs universales */
+    .input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: inherit;
+      transition: border-color 0.3s ease;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      outline: none;
+    }
+    
+    .input:focus {
+      border-color: #008479;
+      box-shadow: 0 0 0 3px rgba(0, 132, 121, 0.1);
+    }
+    
+    /* Modal responsive */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Cards responsive */
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Imágenes responsive */
+    .img-responsive {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    
+    .gallery-img {
+      width: 100%;
+      height: 300px;
+      object-fit: contain;
+      background: white;
+    }
+    
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1100;
+      padding: 16px 24px;
+      background: #008479;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      animation: slideIn 0.3s ease-out;
+      max-width: 90vw;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    /* Header fijo */
+    .header-fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 12px 0;
+    }
+    
+    /* Tabla responsive */
+    .table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+    
+    .table th,
+    .table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .table th {
+      background: #f9fafb;
+      font-weight: 600;
+      color: #008479;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    /* Utilidades */
+    .hidden { display: none !important; }
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .text-right { text-align: right; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-4 { margin-bottom: 16px; }
+    .mb-6 { margin-bottom: 24px; }
+    .mb-8 { margin-bottom: 32px; }
+    .mt-4 { margin-top: 16px; }
+    .mt-8 { margin-top: 32px; }
+    .mt-12 { margin-top: 48px; }
+    .py-2 { padding-top: 8px; padding-bottom: 8px; }
+    .py-4 { padding-top: 16px; padding-bottom: 16px; }
+    .py-6 { padding-top: 24px; padding-bottom: 24px; }
+    .py-8 { padding-top: 32px; padding-bottom: 32px; }
+    .py-12 { padding-top: 48px; padding-bottom: 48px; }
+    .px-4 { padding-left: 16px; padding-right: 16px; }
+    .px-6 { padding-left: 24px; padding-right: 24px; }
+    .p-4 { padding: 16px; }
+    .p-6 { padding: 24px; }
+    .rounded { border-radius: 8px; }
+    .rounded-lg { border-radius: 12px; }
+    .shadow { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+    .shadow-lg { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
+    
+    /* Colores */
+    .text-primary { color: #008479; }
+    .text-secondary { color: #A8A9AC; }
+    .text-dark { color: #111827; }
+    .text-white { color: white; }
+    .bg-primary { background-color: #008479; }
+    .bg-white { background-color: white; }
+    .bg-secondary { background-color: #A8A9AC; }
+    .border-primary { border-color: #008479; }
+    .border-secondary { border-color: #A8A9AC; }
+    
+    /* Responsive text */
+    .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+    .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+    .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+    .text-base { font-size: 1rem; line-height: 1.5rem; }
+    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+    .text-xs { font-size: 0.75rem; line-height: 1rem; }
+    
+    @media (max-width: 768px) {
+      .text-4xl { font-size: 1.875rem; line-height: 2.25rem; }
+      .text-3xl { font-size: 1.5rem; line-height: 2rem; }
+      .text-2xl { font-size: 1.25rem; line-height: 1.75rem; }
+      .toast { right: 12px; top: 12px; }
+    }
+    
+    /* Flexbox utilities */
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .space-y-4 > * + * { margin-top: 16px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    
+    /* Animaciones suaves para touch */
+    @media (hover: none) and (pointer: coarse) {
+      .card:hover {
+        transform: none;
+      }
+      
+      .btn:hover {
+        transform: none;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body style="background-color: #FFFFFF;"><!-- Toast Notification -->
+  <div id="toast" class="toast hidden">
+   <p id="toast-message"></p>
+  </div><!-- Fixed Logo Header -->
+  <div class="header-fixed">
+   <div class="container flex justify-center"><img src="https://res.cloudinary.com/dczh5rxbe/image/upload/v1760143546/VERSION_HORIZONTAL_NEGRO_PNG_Mesa_de_trabajo_1_f1qyof.png" alt="Logo Yorel Cando Fotógrafo" style="height: 36px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.style.display='none';">
+   </div>
+  </div><!-- Header -->
+  <header class="bg-white shadow" style="margin-top: 60px;">
+   <div class="container py-8">
+    <h1 id="page-title" class="text-4xl font-bold text-center mb-2 text-primary">Elige el fondo para la sesión de graduación 2025</h1>
+    <p id="page-subtitle" class="text-lg text-center text-secondary">Vota por tu fondo favorito</p>
+   </div>
+  </header><!-- Reference Images Section -->
+  <section class="container py-6">
+   <div class="card mb-6" style="border-left: 4px solid #008479;">
+    <div class="flex">
+     <div style="flex-shrink: 0; margin-right: 12px;">
+      <svg width="20" height="20" style="color: #008479;" viewbox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+     </div>
+     <div style="flex: 1;">
+      <p class="text-sm font-semibold mb-2 text-primary">Observación importante: Los fondos de las fotos de referencia ya no están disponibles</p>
+      <div class="grid grid-2 mt-4"><img src="https://res.cloudinary.com/dczh5rxbe/image/upload/v1762315470/745d94f05503f37d512c63a70fb9716c_wf6awn.jpg" alt="Referencia 1" class="img-responsive shadow" onerror="this.src=''; this.alt='Imagen de referencia no disponible'; this.style.display='none';"> <img src="https://res.cloudinary.com/dczh5rxbe/image/upload/v1762315534/f4d1a9c6504c25b02962bee425295c36_hxve3w.jpg" alt="Referencia 2" class="img-responsive shadow" onerror="this.src=''; this.alt='Imagen de referencia no disponible'; this.style.display='none';">
+      </div>
+     </div>
+    </div>
+   </div>
+  </section><!-- Voting Rules Section -->
+  <section class="container py-2">
+   <div class="card mb-6" style="border-left: 4px solid #008479;">
+    <div class="flex">
+     <div style="flex-shrink: 0; margin-right: 12px;">
+      <svg width="20" height="20" style="color: #008479;" viewbox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+      </svg>
+     </div>
+     <div style="flex: 1;">
+      <p class="text-sm font-semibold mb-2 text-primary">Reglas de votación:</p>
+      <ul class="text-sm text-secondary" style="list-style: disc; margin-left: 20px;">
+       <li style="margin-bottom: 4px;">Solo puedes votar <strong>una vez</strong> por persona</li>
+       <li style="margin-bottom: 4px;">Para cambiar tu voto, primero debes <strong>eliminar</strong> el anterior desde la tabla de resultados</li>
+       <li>Solo tú puedes eliminar tu propio voto verificando tu nombre</li>
+      </ul>
+     </div>
+    </div>
+   </div>
+  </section><!-- Gallery -->
+  <main class="container py-8">
+   <div id="gallery" class="grid grid-3"><!-- Gallery items will be inserted here -->
+   </div>
+  </main><!-- Results Section -->
+  <section class="container py-12">
+   <div class="card">
+    <h2 id="results-title" class="text-3xl font-bold mb-6 text-center text-primary">Votaciones en tiempo real</h2><!-- Vote Counts -->
+    <div id="vote-counts" class="mb-8 grid grid-3"><!-- Vote counts will be inserted here -->
+    </div><!-- Votes Table -->
+    <div class="table-container">
+     <table class="table">
+      <thead>
+       <tr>
+        <th>Votante</th>
+        <th>Fondo Elegido</th>
+        <th>Fecha y Hora</th>
+        <th>Acciones</th>
+       </tr>
+      </thead>
+      <tbody id="votes-table"><!-- Votes will be inserted here -->
+      </tbody>
+     </table>
+    </div>
+   </div>
+  </section><!-- Footer -->
+  <footer class="mt-12 bg-primary">
+   <div class="container py-8 text-center"><img id="footer-logo" src="https://res.cloudinary.com/dczh5rxbe/image/upload/v1762317966/VERSION_EN_BLANCO_PNG_-_YOREL_CANDO_Mesa_de_trabajo_1_rkqcev.png" alt="Yorel Cando Fotógrafo" style="height: 32px; margin: 0 auto 8px auto; object-fit: contain;" onerror="this.style.display='none';">
+    <p id="footer-text" class="text-lg mb-2 hidden text-white">Fotografía profesional por Yorel Cando</p><a id="footer-website" href="https://www.yorelcandofotografo.com" target="_blank" rel="noopener noreferrer" class="text-white" style="transition: opacity 0.3s ease;">www.yorelcandofotografo.com</a>
+   </div>
+  </footer><!-- Modal -->
+  <div id="modal" class="modal hidden">
+   <div class="modal-content">
+    <h3 class="text-2xl font-bold mb-4 text-center text-primary">Registra tu voto</h3>
+    <p class="mb-4 text-center text-secondary">Has elegido: <span id="selected-background-name" class="font-semibold text-primary"></span></p>
+    <form id="vote-form" class="space-y-4">
+     <div><label for="voter-name" class="block text-sm font-medium mb-2 text-primary">Nombre completo *</label> <input type="text" id="voter-name" required class="input" placeholder="Tu nombre completo">
+     </div>
+     <div><label for="contact-info" class="block text-sm font-medium mb-2 text-primary">Teléfono o correo (opcional)</label> <input type="text" id="contact-info" class="input" placeholder="Teléfono o email">
+     </div>
+     <div class="flex gap-3 mt-6"><button type="button" onclick="closeModal()" class="btn" style="flex: 1; border: 2px solid #A8A9AC; color: #A8A9AC; background: white;"> Cancelar </button> <button type="submit" id="submit-vote-btn" class="btn bg-primary text-white" style="flex: 1;"> Enviar voto </button>
+     </div>
+    </form>
+   </div>
+  </div>
+  <script>
+    const backgrounds = [
+      { url: 'https://res.cloudinary.com/dczh5rxbe/image/upload/v1762314711/SKU3000-Foto-1_aqxyyi.jpg', name: 'SKU3000' },
+      { url: 'https://res.cloudinary.com/dczh5rxbe/image/upload/v1762314711/SKU2994-Foto-1_v28kym.jpg', name: 'SKU2994' },
+      { url: 'https://res.cloudinary.com/dczh5rxbe/image/upload/v1762314711/SKU2992-Foto-1_yzruee.jpg', name: 'SKU2992' },
+      { url: 'https://res.cloudinary.com/dczh5rxbe/image/upload/v1762314710/SKU2995-Foto-1_bmwvpp.jpg', name: 'SKU2995' },
+      { url: 'https://res.cloudinary.com/dczh5rxbe/image/upload/v1762314710/SKU3007-Foto-1_oeoaqk.jpg', name: 'SKU3007' },
+      { url: 'https://res.cloudinary.com/dczh5rxbe/image/upload/v1762314710/SKU2575-Foto-1_p3tc5m.jpg', name: 'SKU2575' },
+      { url: 'https://res.cloudinary.com/dczh5rxbe/image/upload/v1762314710/SKU3005-Foto-1_ltdmt4.jpg', name: 'SKU3005' }
+    ];
+
+    const defaultConfig = {
+      page_title: 'Elige el fondo para la sesión de graduación 2025',
+      page_subtitle: 'Vota por tu fondo favorito',
+      results_title: 'Votaciones en tiempo real',
+      footer_text: 'Fotografía profesional por Yorel Cando',
+      footer_website: 'www.yorelcandofotografo.com',
+      primary_color: '#008479',
+      background_color: '#FFFFFF',
+      text_color: '#111827',
+      card_color: '#FFFFFF',
+      accent_color: '#A8A9AC',
+      font_family: 'Raleway'
+    };
+
+    let currentVotes = [];
+    let selectedBackground = null;
+
+    function renderGallery() {
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = backgrounds.map(function(bg) {
+        return '<div class="card">' +
+          '<img src="' + bg.url + '" alt="' + bg.name + '" class="gallery-img" onerror="this.src=\'\'; this.alt=\'Imagen no disponible\'; this.style.display=\'none\';">' +
+          '<div class="p-4">' +
+            '<h3 class="text-lg font-semibold mb-4 text-primary">' + bg.name + '</h3>' +
+            '<button onclick="openVoteModal(\'' + bg.name + '\')" class="btn bg-primary text-white" style="width: 100%;">' +
+              'Votar por este fondo' +
+            '</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function openVoteModal(backgroundName) {
+      selectedBackground = backgroundName;
+      document.getElementById('selected-background-name').textContent = backgroundName;
+      document.getElementById('modal').classList.remove('hidden');
+      document.getElementById('voter-name').value = '';
+      document.getElementById('contact-info').value = '';
+      
+      // Bloquear scroll de la página
+      document.body.style.overflow = 'hidden';
+      
+      // Enfocar el primer campo con mejor compatibilidad
+      setTimeout(function() {
+        var nameInput = document.getElementById('voter-name');
+        if (nameInput && nameInput.focus) {
+          nameInput.focus();
+        }
+      }, 150);
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.add('hidden');
+      selectedBackground = null;
+      
+      // Restaurar scroll de la página
+      document.body.style.overflow = '';
+    }
+
+    function showToast(message) {
+      var toast = document.getElementById('toast');
+      var toastMessage = document.getElementById('toast-message');
+      if (toast && toastMessage) {
+        toastMessage.textContent = message;
+        toast.classList.remove('hidden');
+        setTimeout(function() {
+          toast.classList.add('hidden');
+        }, 4000);
+      }
+    }
+
+    function getExistingVote(voterName) {
+      return currentVotes.find(vote => 
+        vote.voter_name.toLowerCase().trim() === voterName.toLowerCase().trim()
+      );
+    }
+
+    function deleteVote(voteId, voterName) {
+      // Crear modal personalizado en lugar de usar prompt()
+      var modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.innerHTML = 
+        '<div class="modal-content">' +
+          '<h3 class="text-xl font-bold text-dark mb-4">Confirmar eliminación de voto</h3>' +
+          '<p class="text-secondary mb-4">Para eliminar el voto de <strong>' + voterName + '</strong>, confirma tu nombre completo:</p>' +
+          '<input type="text" id="verification-name" class="input mb-4" placeholder="Escribe tu nombre completo">' +
+          '<div class="flex gap-3">' +
+            '<button onclick="removeDeleteModal()" class="btn" style="flex: 1; border: 2px solid #A8A9AC; color: #A8A9AC; background: white;">' +
+              'Cancelar' +
+            '</button>' +
+            '<button onclick="confirmDelete(\'' + voteId + '\', \'' + voterName + '\', this)" class="btn text-white" style="flex: 1; background: #dc2626;">' +
+              'Eliminar voto' +
+            '</button>' +
+          '</div>' +
+        '</div>';
+      
+      document.body.appendChild(modal);
+      
+      // Enfocar el campo de verificación
+      setTimeout(function() {
+        var verificationInput = document.getElementById('verification-name');
+        if (verificationInput && verificationInput.focus) {
+          verificationInput.focus();
+        }
+      }, 100);
+    }
+
+    function removeDeleteModal() {
+      var modals = document.querySelectorAll('.modal');
+      for (var i = 0; i < modals.length; i++) {
+        if (modals[i].id !== 'modal') {
+          modals[i].remove();
+        }
+      }
+    }
+
+    async function confirmDelete(voteId, voterName, button) {
+      var verificationInput = document.getElementById('verification-name');
+      var verificationName = verificationInput ? verificationInput.value.trim() : '';
+      
+      if (!verificationName) {
+        showToast('Por favor, escribe tu nombre para confirmar.');
+        return;
+      }
+      
+      if (verificationName.toLowerCase() !== voterName.toLowerCase()) {
+        showToast('El nombre no coincide. Solo puedes eliminar tu propio voto.');
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = 'Eliminando...';
+
+      var voteToDelete = null;
+      for (var i = 0; i < currentVotes.length; i++) {
+        if (currentVotes[i].__backendId === voteId) {
+          voteToDelete = currentVotes[i];
+          break;
+        }
+      }
+
+      if (!voteToDelete) {
+        showToast('Error: No se pudo encontrar el voto a eliminar.');
+        removeDeleteModal();
+        return;
+      }
+
+      try {
+        var result = await window.dataSdk.delete(voteToDelete);
+        
+        if (result.isOk) {
+          showToast('Tu voto ha sido eliminado correctamente. Ahora puedes votar nuevamente.');
+        } else {
+          showToast('Error al eliminar el voto. Por favor, intenta nuevamente.');
+        }
+      } catch (error) {
+        showToast('Error al eliminar el voto. Por favor, intenta nuevamente.');
+      }
+      
+      removeDeleteModal();
+    }
+
+    function renderVotes(votes) {
+      currentVotes = votes;
+      
+      var voteCounts = {};
+      for (var i = 0; i < backgrounds.length; i++) {
+        voteCounts[backgrounds[i].name] = 0;
+      }
+      
+      for (var i = 0; i < votes.length; i++) {
+        var vote = votes[i];
+        if (voteCounts[vote.selected_background] !== undefined) {
+          voteCounts[vote.selected_background]++;
+        }
+      }
+      
+      var voteCountsContainer = document.getElementById('vote-counts');
+      var backgroundsWithVotes = [];
+      
+      for (var i = 0; i < backgrounds.length; i++) {
+        if (voteCounts[backgrounds[i].name] > 0) {
+          backgroundsWithVotes.push(backgrounds[i]);
+        }
+      }
+      
+      if (backgroundsWithVotes.length === 0) {
+        voteCountsContainer.innerHTML = 
+          '<div style="grid-column: 1 / -1; text-align: center; padding: 32px 0;">' +
+            '<p class="text-lg text-secondary">Aún no hay votos registrados</p>' +
+          '</div>';
+      } else {
+        var countsHTML = '';
+        for (var i = 0; i < backgroundsWithVotes.length; i++) {
+          var bg = backgroundsWithVotes[i];
+          countsHTML += 
+            '<div class="card text-center" style="border: 1px solid #A8A9AC;">' +
+              '<p class="text-sm mb-2 text-secondary">' + bg.name + '</p>' +
+              '<p class="text-3xl font-bold text-primary">' + voteCounts[bg.name] + '</p>' +
+              '<p class="text-xs text-secondary">votos</p>' +
+            '</div>';
+        }
+        voteCountsContainer.innerHTML = countsHTML;
+      }
+      
+      var votesTable = document.getElementById('votes-table');
+      if (votes.length === 0) {
+        votesTable.innerHTML = 
+          '<tr>' +
+            '<td colspan="4" style="text-align: center; padding: 16px; color: #A8A9AC;">' +
+              'Aún no hay votos registrados' +
+            '</td>' +
+          '</tr>';
+      } else {
+        var tableHTML = '';
+        var reversedVotes = votes.slice().reverse();
+        
+        for (var i = 0; i < reversedVotes.length; i++) {
+          var vote = reversedVotes[i];
+          var date = new Date(vote.vote_timestamp);
+          var formattedDate = date.toLocaleDateString('es-ES', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric' 
+          });
+          var formattedTime = date.toLocaleTimeString('es-ES', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          });
+          
+          tableHTML += 
+            '<tr>' +
+              '<td>' + vote.voter_name + '</td>' +
+              '<td>' + vote.selected_background + '</td>' +
+              '<td class="text-secondary">' + formattedDate + ' ' + formattedTime + '</td>' +
+              '<td>' +
+                '<button onclick="deleteVote(\'' + vote.__backendId + '\', \'' + vote.voter_name + '\')" class="btn text-xs" style="background: #dc2626; color: white; padding: 4px 8px;">' +
+                  'Eliminar' +
+                '</button>' +
+              '</td>' +
+            '</tr>';
+        }
+        votesTable.innerHTML = tableHTML;
+      }
+    }
+
+    const dataHandler = {
+      onDataChanged(data) {
+        renderVotes(data);
+      }
+    };
+
+    document.getElementById('vote-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const voterName = document.getElementById('voter-name').value.trim();
+      const contactInfo = document.getElementById('contact-info').value.trim();
+      
+      // Verificar si ya existe un voto para este nombre
+      const existingVote = getExistingVote(voterName);
+      if (existingVote) {
+        showToast('Ya has votado anteriormente. Para cambiar tu voto, primero elimina el anterior desde la tabla de resultados.');
+        return;
+      }
+      
+      const submitBtn = document.getElementById('submit-vote-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+      
+      const voteData = {
+        voter_name: voterName,
+        contact_info: contactInfo,
+        selected_background: selectedBackground,
+        vote_timestamp: new Date().toISOString()
+      };
+      
+      const result = await window.dataSdk.create(voteData);
+      
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Enviar voto';
+      
+      if (result.isOk) {
+        closeModal();
+        showToast('¡Gracias! Tu voto ha sido registrado correctamente.');
+      } else {
+        showToast('Error al registrar el voto. Por favor, intenta nuevamente.');
+      }
+    });
+
+    async function onConfigChange(config) {
+      document.getElementById('page-title').textContent = config.page_title || defaultConfig.page_title;
+      document.getElementById('page-subtitle').textContent = config.page_subtitle || defaultConfig.page_subtitle;
+      document.getElementById('results-title').textContent = config.results_title || defaultConfig.results_title;
+      
+      // El logo reemplaza al texto del footer
+      const footerLogo = document.getElementById('footer-logo');
+      if (footerLogo) {
+        footerLogo.style.display = 'block';
+      }
+      
+      const websiteLink = document.getElementById('footer-website');
+      const websiteText = config.footer_website || defaultConfig.footer_website;
+      websiteLink.textContent = websiteText;
+      websiteLink.href = websiteText.startsWith('http') ? websiteText : `https://${websiteText}`;
+      
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const cardColor = config.card_color || defaultConfig.card_color;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      
+      // Aplicar colores y fuente
+      document.body.style.backgroundColor = backgroundColor;
+      document.body.style.fontFamily = `'${fontFamily}', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+      
+      // Botones principales
+      const buttons = document.querySelectorAll('.vote-button, button[type="submit"]');
+      buttons.forEach(btn => {
+        btn.style.backgroundColor = primaryColor;
+        btn.style.borderColor = primaryColor;
+      });
+      
+      // Botones de eliminar
+      const deleteButtons = document.querySelectorAll('button[onclick*="deleteVote"]');
+      deleteButtons.forEach(btn => {
+        btn.style.color = primaryColor;
+        btn.style.borderColor = accentColor;
+      });
+      
+      // Títulos y encabezados
+      const headings = document.querySelectorAll('h1, h2, h3');
+      headings.forEach(h => {
+        h.style.color = textColor;
+        h.style.fontFamily = `'${fontFamily}', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+      });
+      
+      // Tarjetas y contenedores
+      const cards = document.querySelectorAll('.bg-white');
+      cards.forEach(card => {
+        card.style.backgroundColor = cardColor;
+      });
+      
+      // Contadores de votos
+      const voteCountNumbers = document.querySelectorAll('#vote-counts .text-3xl');
+      voteCountNumbers.forEach(num => {
+        num.style.color = primaryColor;
+      });
+    }
+
+    async function init() {
+      renderGallery();
+      
+      if (window.dataSdk) {
+        const initResult = await window.dataSdk.init(dataHandler);
+        if (!initResult.isOk) {
+          console.error('Error al inicializar Data SDK');
+        }
+      }
+      
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.primary_color || defaultConfig.primary_color,
+                set: (value) => {
+                  config.primary_color = value;
+                  window.elementSdk.setConfig({ primary_color: value });
+                }
+              },
+              {
+                get: () => config.background_color || defaultConfig.background_color,
+                set: (value) => {
+                  config.background_color = value;
+                  window.elementSdk.setConfig({ background_color: value });
+                }
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (value) => {
+                  config.text_color = value;
+                  window.elementSdk.setConfig({ text_color: value });
+                }
+              },
+              {
+                get: () => config.card_color || defaultConfig.card_color,
+                set: (value) => {
+                  config.card_color = value;
+                  window.elementSdk.setConfig({ card_color: value });
+                }
+              },
+              {
+                get: () => config.accent_color || defaultConfig.accent_color,
+                set: (value) => {
+                  config.accent_color = value;
+                  window.elementSdk.setConfig({ accent_color: value });
+                }
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => config.font_family || defaultConfig.font_family,
+              set: (value) => {
+                config.font_family = value;
+                window.elementSdk.setConfig({ font_family: value });
+              }
+            },
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ['page_title', config.page_title || defaultConfig.page_title],
+            ['page_subtitle', config.page_subtitle || defaultConfig.page_subtitle],
+            ['results_title', config.results_title || defaultConfig.results_title],
+            ['footer_text', config.footer_text || defaultConfig.footer_text],
+            ['footer_website', config.footer_website || defaultConfig.footer_website]
+          ])
+        });
+      }
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'999e899191ad83fe',t:'MTc2MjM2ODYzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
