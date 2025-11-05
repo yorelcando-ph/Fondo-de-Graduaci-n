@@ -8,147 +8,394 @@
   <script src="/_sdk/data_sdk.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
+    * {
       box-sizing: border-box;
-      font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
     }
     
-    .modal-backdrop {
-      background-color: rgba(0, 0, 0, 0.5);
+    body {
+      font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     
-    .gallery-image {
+    /* Contenedor principal responsive */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    
+    /* Grid responsive */
+    .grid {
+      display: grid;
+      gap: 24px;
+    }
+    
+    .grid-1 { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .container { padding: 0 12px; }
+    }
+    
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    /* Botones universales */
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      outline: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    
+    .btn:hover, .btn:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* Inputs universales */
+    .input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: inherit;
+      transition: border-color 0.3s ease;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      outline: none;
+    }
+    
+    .input:focus {
+      border-color: #008479;
+      box-shadow: 0 0 0 3px rgba(0, 132, 121, 0.1);
+    }
+    
+    /* Modal responsive */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Cards responsive */
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     
-    .gallery-image:hover {
+    .card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
     
-    .vote-button {
-      transition: all 0.3s ease;
+    /* Imágenes responsive */
+    .img-responsive {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      object-fit: cover;
     }
     
-    .vote-button:hover {
-      transform: scale(1.05);
+    .gallery-img {
+      width: 100%;
+      height: 300px;
+      object-fit: contain;
+      background: white;
     }
     
+    /* Toast notification */
     .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1100;
+      padding: 16px 24px;
+      background: #008479;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       animation: slideIn 0.3s ease-out;
+      max-width: 90vw;
     }
     
     @keyframes slideIn {
       from {
-        transform: translateY(-100%);
+        transform: translateX(100%);
         opacity: 0;
       }
       to {
-        transform: translateY(0);
+        transform: translateX(0);
         opacity: 1;
       }
     }
     
-    .reference-image {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
+    /* Header fijo */
+    .header-fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 12px 0;
+    }
+    
+    /* Tabla responsive */
+    .table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+    
+    .table th,
+    .table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .table th {
+      background: #f9fafb;
+      font-weight: 600;
+      color: #008479;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    /* Utilidades */
+    .hidden { display: none !important; }
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .text-right { text-align: right; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-4 { margin-bottom: 16px; }
+    .mb-6 { margin-bottom: 24px; }
+    .mb-8 { margin-bottom: 32px; }
+    .mt-4 { margin-top: 16px; }
+    .mt-8 { margin-top: 32px; }
+    .mt-12 { margin-top: 48px; }
+    .py-2 { padding-top: 8px; padding-bottom: 8px; }
+    .py-4 { padding-top: 16px; padding-bottom: 16px; }
+    .py-6 { padding-top: 24px; padding-bottom: 24px; }
+    .py-8 { padding-top: 32px; padding-bottom: 32px; }
+    .py-12 { padding-top: 48px; padding-bottom: 48px; }
+    .px-4 { padding-left: 16px; padding-right: 16px; }
+    .px-6 { padding-left: 24px; padding-right: 24px; }
+    .p-4 { padding: 16px; }
+    .p-6 { padding: 24px; }
+    .rounded { border-radius: 8px; }
+    .rounded-lg { border-radius: 12px; }
+    .shadow { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+    .shadow-lg { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
+    
+    /* Colores */
+    .text-primary { color: #008479; }
+    .text-secondary { color: #A8A9AC; }
+    .text-dark { color: #111827; }
+    .text-white { color: white; }
+    .bg-primary { background-color: #008479; }
+    .bg-white { background-color: white; }
+    .bg-secondary { background-color: #A8A9AC; }
+    .border-primary { border-color: #008479; }
+    .border-secondary { border-color: #A8A9AC; }
+    
+    /* Responsive text */
+    .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+    .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+    .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+    .text-base { font-size: 1rem; line-height: 1.5rem; }
+    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+    .text-xs { font-size: 0.75rem; line-height: 1rem; }
+    
+    @media (max-width: 768px) {
+      .text-4xl { font-size: 1.875rem; line-height: 2.25rem; }
+      .text-3xl { font-size: 1.5rem; line-height: 2rem; }
+      .text-2xl { font-size: 1.25rem; line-height: 1.75rem; }
+      .toast { right: 12px; top: 12px; }
+    }
+    
+    /* Flexbox utilities */
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .space-y-4 > * + * { margin-top: 16px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    
+    /* Animaciones suaves para touch */
+    @media (hover: none) and (pointer: coarse) {
+      .card:hover {
+        transform: none;
+      }
+      
+      .btn:hover {
+        transform: none;
+      }
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
  </head>
  <body style="background-color: #FFFFFF;"><!-- Toast Notification -->
-  <div id="toast" class="fixed top-4 right-4 text-white px-6 py-3 rounded-lg shadow-lg hidden z-50 toast" style="background-color: #008479;">
+  <div id="toast" class="toast hidden">
    <p id="toast-message"></p>
   </div><!-- Fixed Logo Header -->
-  <div class="fixed top-0 left-0 right-0 z-30 flex justify-center py-2" style="background-color: #FFFFFF; box-shadow: 0 2px 4px rgba(168, 169, 172, 0.1);"><img src="https://res.cloudinary.com/dczh5rxbe/image/upload/v1760143546/VERSION_HORIZONTAL_NEGRO_PNG_Mesa_de_trabajo_1_f1qyof.png" alt="Logo Yorel Cando Fotógrafo" class="h-9 object-contain" onerror="this.style.display='none';">
+  <div class="header-fixed">
+   <div class="container flex justify-center"><img src="https://res.cloudinary.com/dczh5rxbe/image/upload/v1760143546/VERSION_HORIZONTAL_NEGRO_PNG_Mesa_de_trabajo_1_f1qyof.png" alt="Logo Yorel Cando Fotógrafo" style="height: 36px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.style.display='none';">
+   </div>
   </div><!-- Header -->
-  <header style="background-color: #FFFFFF; box-shadow: 0 1px 3px 0 rgba(168, 169, 172, 0.1); margin-top: 48px;">
-   <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-    <h1 id="page-title" class="text-4xl font-bold text-center mb-2" style="color: #008479;">Elige el fondo para la sesión de graduación 2025</h1>
-    <p id="page-subtitle" class="text-lg text-center" style="color: #A8A9AC;">Vota por tu fondo favorito</p>
+  <header class="bg-white shadow" style="margin-top: 60px;">
+   <div class="container py-8">
+    <h1 id="page-title" class="text-4xl font-bold text-center mb-2 text-primary">Elige el fondo para la sesión de graduación 2025</h1>
+    <p id="page-subtitle" class="text-lg text-center text-secondary">Vota por tu fondo favorito</p>
    </div>
   </header><!-- Reference Images Section -->
-  <section class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-   <div class="p-4 mb-6" style="background-color: #FFFFFF; border-left: 4px solid #008479;">
+  <section class="container py-6">
+   <div class="card mb-6" style="border-left: 4px solid #008479;">
     <div class="flex">
-     <div class="flex-shrink-0">
-      <svg class="h-5 w-5" style="color: #008479;" viewbox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+     <div style="flex-shrink: 0; margin-right: 12px;">
+      <svg width="20" height="20" style="color: #008479;" viewbox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
       </svg>
      </div>
-     <div class="ml-3">
-      <p class="text-sm font-semibold mb-2" style="color: #008479;">Observación importante: Los fondos de las fotos de referencia ya no están disponibles</p>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3"><img src="https://res.cloudinary.com/dczh5rxbe/image/upload/v1762315470/745d94f05503f37d512c63a70fb9716c_wf6awn.jpg" alt="Referencia 1" class="reference-image shadow-md" onerror="this.src=''; this.alt='Imagen de referencia no disponible'; this.style.display='none';"> <img src="https://res.cloudinary.com/dczh5rxbe/image/upload/v1762315534/f4d1a9c6504c25b02962bee425295c36_hxve3w.jpg" alt="Referencia 2" class="reference-image shadow-md" onerror="this.src=''; this.alt='Imagen de referencia no disponible'; this.style.display='none';">
+     <div style="flex: 1;">
+      <p class="text-sm font-semibold mb-2 text-primary">Observación importante: Los fondos de las fotos de referencia ya no están disponibles</p>
+      <div class="grid grid-2 mt-4"><img src="https://res.cloudinary.com/dczh5rxbe/image/upload/v1762315470/745d94f05503f37d512c63a70fb9716c_wf6awn.jpg" alt="Referencia 1" class="img-responsive shadow" onerror="this.src=''; this.alt='Imagen de referencia no disponible'; this.style.display='none';"> <img src="https://res.cloudinary.com/dczh5rxbe/image/upload/v1762315534/f4d1a9c6504c25b02962bee425295c36_hxve3w.jpg" alt="Referencia 2" class="img-responsive shadow" onerror="this.src=''; this.alt='Imagen de referencia no disponible'; this.style.display='none';">
       </div>
      </div>
     </div>
    </div>
   </section><!-- Voting Rules Section -->
-  <section class="max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8">
-   <div class="p-4 mb-6" style="background-color: #FFFFFF; border-left: 4px solid #008479;">
+  <section class="container py-2">
+   <div class="card mb-6" style="border-left: 4px solid #008479;">
     <div class="flex">
-     <div class="flex-shrink-0">
-      <svg class="h-5 w-5" style="color: #008479;" viewbox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+     <div style="flex-shrink: 0; margin-right: 12px;">
+      <svg width="20" height="20" style="color: #008479;" viewbox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
       </svg>
      </div>
-     <div class="ml-3">
-      <p class="text-sm font-semibold mb-1" style="color: #008479;">Reglas de votación:</p>
-      <ul class="text-sm list-disc list-inside space-y-1" style="color: #A8A9AC;">
-       <li>Solo puedes votar <strong>una vez</strong> por persona</li>
-       <li>Para cambiar tu voto, primero debes <strong>eliminar</strong> el anterior desde la tabla de resultados</li>
+     <div style="flex: 1;">
+      <p class="text-sm font-semibold mb-2 text-primary">Reglas de votación:</p>
+      <ul class="text-sm text-secondary" style="list-style: disc; margin-left: 20px;">
+       <li style="margin-bottom: 4px;">Solo puedes votar <strong>una vez</strong> por persona</li>
+       <li style="margin-bottom: 4px;">Para cambiar tu voto, primero debes <strong>eliminar</strong> el anterior desde la tabla de resultados</li>
        <li>Solo tú puedes eliminar tu propio voto verificando tu nombre</li>
       </ul>
      </div>
     </div>
    </div>
   </section><!-- Gallery -->
-  <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-   <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"><!-- Gallery items will be inserted here -->
+  <main class="container py-8">
+   <div id="gallery" class="grid grid-3"><!-- Gallery items will be inserted here -->
    </div>
   </main><!-- Results Section -->
-  <section class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-   <div class="rounded-lg p-6" style="background-color: #FFFFFF; box-shadow: 0 4px 6px -1px rgba(168, 169, 172, 0.1);">
-    <h2 id="results-title" class="text-3xl font-bold mb-6 text-center" style="color: #008479;">Votaciones en tiempo real</h2><!-- Vote Counts -->
-    <div id="vote-counts" class="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"><!-- Vote counts will be inserted here -->
+  <section class="container py-12">
+   <div class="card">
+    <h2 id="results-title" class="text-3xl font-bold mb-6 text-center text-primary">Votaciones en tiempo real</h2><!-- Vote Counts -->
+    <div id="vote-counts" class="mb-8 grid grid-3"><!-- Vote counts will be inserted here -->
     </div><!-- Votes Table -->
-    <div class="overflow-x-auto">
-     <table class="min-w-full" style="border-top: 1px solid #A8A9AC;">
-      <thead style="background-color: #FFFFFF;">
+    <div class="table-container">
+     <table class="table">
+      <thead>
        <tr>
-        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style="color: #008479;">Votante</th>
-        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style="color: #008479;">Fondo Elegido</th>
-        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style="color: #008479;">Fecha y Hora</th>
-        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style="color: #008479;">Acciones</th>
+        <th>Votante</th>
+        <th>Fondo Elegido</th>
+        <th>Fecha y Hora</th>
+        <th>Acciones</th>
        </tr>
       </thead>
-      <tbody id="votes-table" style="background-color: #FFFFFF; border-top: 1px solid #A8A9AC;"><!-- Votes will be inserted here -->
+      <tbody id="votes-table"><!-- Votes will be inserted here -->
       </tbody>
      </table>
     </div>
    </div>
   </section><!-- Footer -->
-  <footer class="mt-12" style="background-color: #008479;">
-   <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 text-center"><img id="footer-logo" src="https://res.cloudinary.com/dczh5rxbe/image/upload/v1762317966/VERSION_EN_BLANCO_PNG_-_YOREL_CANDO_Mesa_de_trabajo_1_rkqcev.png" alt="Yorel Cando Fotógrafo" class="h-8 mx-auto mb-2 object-contain" onerror="this.style.display='none';" style="filter: brightness(1);">
-    <p id="footer-text" class="text-lg mb-2 hidden" style="color: #FFFFFF;">Fotografía profesional por Yorel Cando</p><a id="footer-website" href="https://www.yorelcandofotografo.com" target="_blank" rel="noopener noreferrer" class="transition-colors" style="color: #FFFFFF;">www.yorelcandofotografo.com</a>
+  <footer class="mt-12 bg-primary">
+   <div class="container py-8 text-center"><img id="footer-logo" src="https://res.cloudinary.com/dczh5rxbe/image/upload/v1762317966/VERSION_EN_BLANCO_PNG_-_YOREL_CANDO_Mesa_de_trabajo_1_rkqcev.png" alt="Yorel Cando Fotógrafo" style="height: 32px; margin: 0 auto 8px auto; object-fit: contain;" onerror="this.style.display='none';">
+    <p id="footer-text" class="text-lg mb-2 hidden text-white">Fotografía profesional por Yorel Cando</p><a id="footer-website" href="https://www.yorelcandofotografo.com" target="_blank" rel="noopener noreferrer" class="text-white" style="transition: opacity 0.3s ease;">www.yorelcandofotografo.com</a>
    </div>
   </footer><!-- Modal -->
-  <div id="modal" class="fixed inset-0 z-50 hidden">
-   <div class="modal-backdrop absolute inset-0" style="background-color: rgba(0, 0, 0, 0.8);"></div>
-   <div class="flex items-center justify-center min-h-full p-4 fixed inset-0">
-    <div class="rounded-lg shadow-xl max-w-md w-full p-6 relative z-50" style="background-color: #FFFFFF; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-     <h3 class="text-2xl font-bold mb-4 text-center" style="color: #008479;">Registra tu voto</h3>
-     <p class="mb-4 text-center" style="color: #A8A9AC;">Has elegido: <span id="selected-background-name" class="font-semibold" style="color: #008479;"></span></p>
-     <form id="vote-form" class="space-y-4">
-      <div><label for="voter-name" class="block text-sm font-medium mb-1" style="color: #008479;">Nombre completo *</label> <input type="text" id="voter-name" required class="w-full px-4 py-2 rounded-lg focus:ring-2 focus:border-transparent" style="border: 1px solid #A8A9AC; focus:ring-color: #008479;" placeholder="Tu nombre completo">
-      </div>
-      <div><label for="contact-info" class="block text-sm font-medium mb-1" style="color: #008479;">Teléfono o correo (opcional)</label> <input type="text" id="contact-info" class="w-full px-4 py-2 rounded-lg focus:ring-2 focus:border-transparent" style="border: 1px solid #A8A9AC; focus:ring-color: #008479;" placeholder="Teléfono o email">
-      </div>
-      <div class="flex gap-3 pt-4"><button type="button" onclick="closeModal()" class="flex-1 px-4 py-2 rounded-lg transition-colors" style="border: 1px solid #A8A9AC; color: #A8A9AC; background-color: #FFFFFF;"> Cancelar </button> <button type="submit" id="submit-vote-btn" class="flex-1 px-4 py-2 rounded-lg transition-colors" style="background-color: #008479; color: #FFFFFF;"> Enviar voto </button>
-      </div>
-     </form>
-    </div>
+  <div id="modal" class="modal hidden">
+   <div class="modal-content">
+    <h3 class="text-2xl font-bold mb-4 text-center text-primary">Registra tu voto</h3>
+    <p class="mb-4 text-center text-secondary">Has elegido: <span id="selected-background-name" class="font-semibold text-primary"></span></p>
+    <form id="vote-form" class="space-y-4">
+     <div><label for="voter-name" class="block text-sm font-medium mb-2 text-primary">Nombre completo *</label> <input type="text" id="voter-name" required class="input" placeholder="Tu nombre completo">
+     </div>
+     <div><label for="contact-info" class="block text-sm font-medium mb-2 text-primary">Teléfono o correo (opcional)</label> <input type="text" id="contact-info" class="input" placeholder="Teléfono o email">
+     </div>
+     <div class="flex gap-3 mt-6"><button type="button" onclick="closeModal()" class="btn" style="flex: 1; border: 2px solid #A8A9AC; color: #A8A9AC; background: white;"> Cancelar </button> <button type="submit" id="submit-vote-btn" class="btn bg-primary text-white" style="flex: 1;"> Enviar voto </button>
+     </div>
+    </form>
    </div>
   </div>
   <script>
@@ -181,17 +428,17 @@
 
     function renderGallery() {
       const gallery = document.getElementById('gallery');
-      gallery.innerHTML = backgrounds.map(bg => `
-        <div class="rounded-lg overflow-hidden gallery-image" style="background-color: #FFFFFF; box-shadow: 0 4px 6px -1px rgba(168, 169, 172, 0.1);">
-          <img src="${bg.url}" alt="${bg.name}" class="w-full h-80 object-contain" style="background-color: #FFFFFF;" onerror="this.src=''; this.alt='Imagen no disponible'; this.style.display='none';">
-          <div class="p-4">
-            <h3 class="text-lg font-semibold mb-3" style="color: #008479;">${bg.name}</h3>
-            <button onclick="openVoteModal('${bg.name}')" class="w-full px-4 py-2 rounded-lg vote-button transition-colors" style="background-color: #008479; color: #FFFFFF;">
-              Votar por este fondo
-            </button>
-          </div>
-        </div>
-      `).join('');
+      gallery.innerHTML = backgrounds.map(function(bg) {
+        return '<div class="card">' +
+          '<img src="' + bg.url + '" alt="' + bg.name + '" class="gallery-img" onerror="this.src=\'\'; this.alt=\'Imagen no disponible\'; this.style.display=\'none\';">' +
+          '<div class="p-4">' +
+            '<h3 class="text-lg font-semibold mb-4 text-primary">' + bg.name + '</h3>' +
+            '<button onclick="openVoteModal(\'' + bg.name + '\')" class="btn bg-primary text-white" style="width: 100%;">' +
+              'Votar por este fondo' +
+            '</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
     }
 
     function openVoteModal(backgroundName) {
@@ -204,10 +451,13 @@
       // Bloquear scroll de la página
       document.body.style.overflow = 'hidden';
       
-      // Enfocar el primer campo
-      setTimeout(() => {
-        document.getElementById('voter-name').focus();
-      }, 100);
+      // Enfocar el primer campo con mejor compatibilidad
+      setTimeout(function() {
+        var nameInput = document.getElementById('voter-name');
+        if (nameInput && nameInput.focus) {
+          nameInput.focus();
+        }
+      }, 150);
     }
 
     function closeModal() {
@@ -215,17 +465,19 @@
       selectedBackground = null;
       
       // Restaurar scroll de la página
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = '';
     }
 
     function showToast(message) {
-      const toast = document.getElementById('toast');
-      const toastMessage = document.getElementById('toast-message');
-      toastMessage.textContent = message;
-      toast.classList.remove('hidden');
-      setTimeout(() => {
-        toast.classList.add('hidden');
-      }, 3000);
+      var toast = document.getElementById('toast');
+      var toastMessage = document.getElementById('toast-message');
+      if (toast && toastMessage) {
+        toastMessage.textContent = message;
+        toast.classList.remove('hidden');
+        setTimeout(function() {
+          toast.classList.add('hidden');
+        }, 4000);
+      }
     }
 
     function getExistingVote(voterName) {
@@ -234,33 +486,48 @@
       );
     }
 
-    async function deleteVote(voteId, voterName) {
+    function deleteVote(voteId, voterName) {
       // Crear modal personalizado en lugar de usar prompt()
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 z-50 flex items-center justify-center';
-      modal.innerHTML = `
-        <div class="modal-backdrop absolute inset-0"></div>
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative z-50 mx-4">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Confirmar eliminación de voto</h3>
-          <p class="text-gray-600 mb-4">Para eliminar el voto de <strong>${voterName}</strong>, confirma tu nombre completo:</p>
-          <input type="text" id="verification-name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4" placeholder="Escribe tu nombre completo">
-          <div class="flex gap-3">
-            <button onclick="this.closest('.fixed').remove()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-              Cancelar
-            </button>
-            <button onclick="confirmDelete('${voteId}', '${voterName}', this)" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-              Eliminar voto
-            </button>
-          </div>
-        </div>
-      `;
+      var modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.innerHTML = 
+        '<div class="modal-content">' +
+          '<h3 class="text-xl font-bold text-dark mb-4">Confirmar eliminación de voto</h3>' +
+          '<p class="text-secondary mb-4">Para eliminar el voto de <strong>' + voterName + '</strong>, confirma tu nombre completo:</p>' +
+          '<input type="text" id="verification-name" class="input mb-4" placeholder="Escribe tu nombre completo">' +
+          '<div class="flex gap-3">' +
+            '<button onclick="removeDeleteModal()" class="btn" style="flex: 1; border: 2px solid #A8A9AC; color: #A8A9AC; background: white;">' +
+              'Cancelar' +
+            '</button>' +
+            '<button onclick="confirmDelete(\'' + voteId + '\', \'' + voterName + '\', this)" class="btn text-white" style="flex: 1; background: #dc2626;">' +
+              'Eliminar voto' +
+            '</button>' +
+          '</div>' +
+        '</div>';
       
       document.body.appendChild(modal);
-      document.getElementById('verification-name').focus();
+      
+      // Enfocar el campo de verificación
+      setTimeout(function() {
+        var verificationInput = document.getElementById('verification-name');
+        if (verificationInput && verificationInput.focus) {
+          verificationInput.focus();
+        }
+      }, 100);
+    }
+
+    function removeDeleteModal() {
+      var modals = document.querySelectorAll('.modal');
+      for (var i = 0; i < modals.length; i++) {
+        if (modals[i].id !== 'modal') {
+          modals[i].remove();
+        }
+      }
     }
 
     async function confirmDelete(voteId, voterName, button) {
-      const verificationName = document.getElementById('verification-name').value.trim();
+      var verificationInput = document.getElementById('verification-name');
+      var verificationName = verificationInput ? verificationInput.value.trim() : '';
       
       if (!verificationName) {
         showToast('Por favor, escribe tu nombre para confirmar.');
@@ -275,93 +542,116 @@
       button.disabled = true;
       button.textContent = 'Eliminando...';
 
-      const voteToDelete = currentVotes.find(vote => vote.__backendId === voteId);
+      var voteToDelete = null;
+      for (var i = 0; i < currentVotes.length; i++) {
+        if (currentVotes[i].__backendId === voteId) {
+          voteToDelete = currentVotes[i];
+          break;
+        }
+      }
+
       if (!voteToDelete) {
         showToast('Error: No se pudo encontrar el voto a eliminar.');
-        button.closest('.fixed').remove();
+        removeDeleteModal();
         return;
       }
 
-      const result = await window.dataSdk.delete(voteToDelete);
-      
-      if (result.isOk) {
-        showToast(`Tu voto ha sido eliminado correctamente. Ahora puedes votar nuevamente.`);
-      } else {
+      try {
+        var result = await window.dataSdk.delete(voteToDelete);
+        
+        if (result.isOk) {
+          showToast('Tu voto ha sido eliminado correctamente. Ahora puedes votar nuevamente.');
+        } else {
+          showToast('Error al eliminar el voto. Por favor, intenta nuevamente.');
+        }
+      } catch (error) {
         showToast('Error al eliminar el voto. Por favor, intenta nuevamente.');
       }
       
-      button.closest('.fixed').remove();
+      removeDeleteModal();
     }
 
     function renderVotes(votes) {
       currentVotes = votes;
       
-      const voteCounts = {};
-      backgrounds.forEach(bg => {
-        voteCounts[bg.name] = 0;
-      });
+      var voteCounts = {};
+      for (var i = 0; i < backgrounds.length; i++) {
+        voteCounts[backgrounds[i].name] = 0;
+      }
       
-      votes.forEach(vote => {
+      for (var i = 0; i < votes.length; i++) {
+        var vote = votes[i];
         if (voteCounts[vote.selected_background] !== undefined) {
           voteCounts[vote.selected_background]++;
         }
-      });
-      
-      const voteCountsContainer = document.getElementById('vote-counts');
-      // Solo mostrar fondos que tienen votos
-      const backgroundsWithVotes = backgrounds.filter(bg => voteCounts[bg.name] > 0);
-      
-      if (backgroundsWithVotes.length === 0) {
-        voteCountsContainer.innerHTML = `
-          <div class="col-span-full text-center py-8">
-            <p class="text-lg" style="color: #A8A9AC;">Aún no hay votos registrados</p>
-          </div>
-        `;
-      } else {
-        voteCountsContainer.innerHTML = backgroundsWithVotes.map(bg => `
-          <div class="rounded-lg p-4 text-center" style="background-color: #FFFFFF; border: 1px solid #A8A9AC;">
-            <p class="text-sm mb-1" style="color: #A8A9AC;">${bg.name}</p>
-            <p class="text-3xl font-bold" style="color: #008479;">${voteCounts[bg.name]}</p>
-            <p class="text-xs" style="color: #A8A9AC;">votos</p>
-          </div>
-        `).join('');
       }
       
-      const votesTable = document.getElementById('votes-table');
-      if (votes.length === 0) {
-        votesTable.innerHTML = `
-          <tr>
-            <td colspan="4" class="px-6 py-4 text-center" style="color: #A8A9AC;">
-              Aún no hay votos registrados
-            </td>
-          </tr>
-        `;
+      var voteCountsContainer = document.getElementById('vote-counts');
+      var backgroundsWithVotes = [];
+      
+      for (var i = 0; i < backgrounds.length; i++) {
+        if (voteCounts[backgrounds[i].name] > 0) {
+          backgroundsWithVotes.push(backgrounds[i]);
+        }
+      }
+      
+      if (backgroundsWithVotes.length === 0) {
+        voteCountsContainer.innerHTML = 
+          '<div style="grid-column: 1 / -1; text-align: center; padding: 32px 0;">' +
+            '<p class="text-lg text-secondary">Aún no hay votos registrados</p>' +
+          '</div>';
       } else {
-        votesTable.innerHTML = votes.slice().reverse().map(vote => {
-          const date = new Date(vote.vote_timestamp);
-          const formattedDate = date.toLocaleDateString('es-ES', { 
+        var countsHTML = '';
+        for (var i = 0; i < backgroundsWithVotes.length; i++) {
+          var bg = backgroundsWithVotes[i];
+          countsHTML += 
+            '<div class="card text-center" style="border: 1px solid #A8A9AC;">' +
+              '<p class="text-sm mb-2 text-secondary">' + bg.name + '</p>' +
+              '<p class="text-3xl font-bold text-primary">' + voteCounts[bg.name] + '</p>' +
+              '<p class="text-xs text-secondary">votos</p>' +
+            '</div>';
+        }
+        voteCountsContainer.innerHTML = countsHTML;
+      }
+      
+      var votesTable = document.getElementById('votes-table');
+      if (votes.length === 0) {
+        votesTable.innerHTML = 
+          '<tr>' +
+            '<td colspan="4" style="text-align: center; padding: 16px; color: #A8A9AC;">' +
+              'Aún no hay votos registrados' +
+            '</td>' +
+          '</tr>';
+      } else {
+        var tableHTML = '';
+        var reversedVotes = votes.slice().reverse();
+        
+        for (var i = 0; i < reversedVotes.length; i++) {
+          var vote = reversedVotes[i];
+          var date = new Date(vote.vote_timestamp);
+          var formattedDate = date.toLocaleDateString('es-ES', { 
             day: '2-digit', 
             month: '2-digit', 
             year: 'numeric' 
           });
-          const formattedTime = date.toLocaleTimeString('es-ES', { 
+          var formattedTime = date.toLocaleTimeString('es-ES', { 
             hour: '2-digit', 
             minute: '2-digit' 
           });
           
-          return `
-            <tr>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${vote.voter_name}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${vote.selected_background}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formattedDate} ${formattedTime}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <button onclick="deleteVote('${vote.__backendId}', '${vote.voter_name}')" class="text-red-600 hover:text-red-800 text-xs px-2 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors">
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          `;
-        }).join('');
+          tableHTML += 
+            '<tr>' +
+              '<td>' + vote.voter_name + '</td>' +
+              '<td>' + vote.selected_background + '</td>' +
+              '<td class="text-secondary">' + formattedDate + ' ' + formattedTime + '</td>' +
+              '<td>' +
+                '<button onclick="deleteVote(\'' + vote.__backendId + '\', \'' + vote.voter_name + '\')" class="btn text-xs" style="background: #dc2626; color: white; padding: 4px 8px;">' +
+                  'Eliminar' +
+                '</button>' +
+              '</td>' +
+            '</tr>';
+        }
+        votesTable.innerHTML = tableHTML;
       }
     }
 
@@ -544,5 +834,5 @@
 
     init();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9999bab9130783fe',t:'MTc2MjMxODIxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'999e899191ad83fe',t:'MTc2MjM2ODYzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
